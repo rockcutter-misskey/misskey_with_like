@@ -572,7 +572,8 @@ export function useUploader(options: {
 		}
 
 		// misskey_with_like での独自改変
-		// 画像の圧縮を強制する
+		// 圧縮を強制する
+		// 圧縮によるEXIF情報の削除という副次的効果を利用するため
 		item.compressionLevel = ( item.compressionLevel === 0 ? 1 : item.compressionLevel ) as typeof item.compressionLevel;
 
 		const compressionSettings = getCompressionSettings(item.compressionLevel);
@@ -612,6 +613,11 @@ export function useUploader(options: {
 
 	async function preprocessForVideo(item: UploaderItem): Promise<void> {
 		let preprocessedFile: Blob | File = item.file;
+
+		// misskey_with_like での独自改変
+		// 圧縮を強制する
+		// 圧縮によるEXIF情報の削除という副次的効果を利用するため
+		item.compressionLevel = ( item.compressionLevel === 0 ? 1 : item.compressionLevel ) as typeof item.compressionLevel;
 
 		const needsCompress = item.compressionLevel !== 0 && VIDEO_COMPRESSION_SUPPORTED_TYPES.includes(preprocessedFile.type);
 
