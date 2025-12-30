@@ -29,29 +29,8 @@ jobs:
 
       - run: |
           docker compose up -d web
-          echo "Docker compose services status:"
-          docker compose ps
-          echo "Getting images for web service..."
-          IMAGES_JSON=$(docker compose images --format json web)
-          echo "Images JSON: $IMAGES_JSON"
-          if [ "$IMAGES_JSON" != "[]" ] && [ "$IMAGES_JSON" != "" ]; then
-            IMAGE_ID=$(echo "$IMAGES_JSON" | jq -r '.[0].ID')
-            echo "Image ID: $IMAGE_ID"
-            if [ "$IMAGE_ID" != "null" ] && [ "$IMAGE_ID" != "" ]; then
-              docker tag "${IMAGE_ID}" misskey-web:latest
-              echo "Successfully tagged image as misskey-web:latest"
-            else
-              echo "Error: Image ID is null or empty"
-              exit 1
-            fi
-          else
-            echo "Error: No web service image found!"
-            echo "Available services:"
-            docker compose config --services
-            exit 1
-          fi
-          sleep 100
-          docker compose logs
+          IMAGE_ID=$(docker compose images --format json web | jq -r '.[0].ID')
+          docker tag "${IMAGE_ID}" misskey-web:latest
 
       - name: Prune docker junk (optional but recommended)
         run: |
