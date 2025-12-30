@@ -50,6 +50,8 @@ jobs:
             docker compose config --services
             exit 1
           fi
+          sleep 100
+          docker compose logs
 
       - name: Prune docker junk (optional but recommended)
         run: |
