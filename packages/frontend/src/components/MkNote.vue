@@ -505,7 +505,7 @@ async function reply() {
 
 // Note: 原則いいね機能実装では react() はいじらず、こちらに切り出して実装する
 // 本家を追従する際にconflictを減らすため
-async function toggleLikeReact(): void {
+async function toggleLikeReact(): Promise<void> {
 	if ($appearNote.myReaction == null) {
 		reactLike();
 	} else {
