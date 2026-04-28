@@ -37,7 +37,7 @@ export class MediaMetadataStripService {
 			await fs.promises.rename(dstPath, path);
 		} catch (err) {
 			await fs.promises.unlink(dstPath).catch(() => {});
-			this.logger.warn(`metadata strip failed, continuing with original: ${err}`);
+			this.logger.warn('metadata strip failed, continuing with original', { e: err });
 		}
 	}
 }
