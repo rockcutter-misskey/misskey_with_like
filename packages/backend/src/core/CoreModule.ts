@@ -154,6 +154,8 @@ import { ApQuestionService } from './activitypub/models/ApQuestionService.js';
 import { QueueModule } from './QueueModule.js';
 import { QueueService } from './QueueService.js';
 import { LoggerService } from './LoggerService.js';
+import { MediaMetadataStripService } from './media-metadata-strip/MediaMetadataStripService.js';
+import { JpegMetadataStripper } from './media-metadata-strip/JpegMetadataStripper.js';
 import type { Provider } from '@nestjs/common';
 
 //#region 文字列ベースでのinjection用(循環参照対応のため)
@@ -459,6 +461,9 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		ApQuestionService,
 		QueueService,
 
+		MediaMetadataStripService,
+		JpegMetadataStripper,
+
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$LoggerService,
 		$AbuseReportService,
@@ -757,6 +762,9 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		ApPersonService,
 		ApQuestionService,
 		QueueService,
+
+		MediaMetadataStripService,
+		JpegMetadataStripper,
 
 		//#region 文字列ベースでのinjection用(循環参照対応のため)
 		$LoggerService,

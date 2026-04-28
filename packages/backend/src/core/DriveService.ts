@@ -43,6 +43,7 @@ import { correctFilename } from '@/misc/correct-filename.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { UtilityService } from '@/core/UtilityService.js';
+import { MediaMetadataStripService } from '@/core/media-metadata-strip/MediaMetadataStripService.js';
 
 type AddFileArgs = {
 	/** User who wish to add file */
@@ -130,6 +131,7 @@ export class DriveService {
 		private perUserDriveChart: PerUserDriveChart,
 		private instanceChart: InstanceChart,
 		private utilityService: UtilityService,
+		private mediaMetadataStripService: MediaMetadataStripService,
 	) {
 		const logger = new Logger('drive', 'blue');
 		this.registerLogger = logger.createSubLogger('register', 'yellow');
@@ -467,6 +469,10 @@ export class DriveService {
 		if (this.meta.sensitiveMediaDetection === 'none') skipNsfwCheck = true;
 		if (user && this.meta.sensitiveMediaDetection === 'local' && this.userEntityService.isRemoteUser(user)) skipNsfwCheck = true;
 		if (user && this.meta.sensitiveMediaDetection === 'remote' && this.userEntityService.isLocalUser(user)) skipNsfwCheck = true;
+
+		if (user && this.userEntityService.isLocalUser(user)) {
+			await this.mediaMetadataStripService.strip(path);
+		}
 
 		const info = await this.fileInfoService.getFileInfo(path, {
 			fileName: name,
