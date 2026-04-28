@@ -5,5 +5,9 @@
 
 export interface MetadataStripper {
 	readonly mime: string;
-	strip(path: string): Promise<void>;
+	/**
+	 * Read the file at `srcPath`, strip metadata, and write the result to `dstPath`.
+	 * The caller is responsible for any post-processing such as replacing the original.
+	 */
+	strip(srcPath: string, dstPath: string): Promise<void>;
 }
