@@ -1,0 +1,77 @@
+# 開発用 docker compose（フル containerized 構成）
+#
+# misskey 本体（web）も docker 内で起動する。ホスト側に node/pnpm は不要。
+# HMR は効かないので、コードを変更したら docker compose build && up し直すか、
+# 後述の「ホスト側で pnpm dev」モードに切り替える。
+#
+# 想定する使い方:
+#   1. docker compose -f development/compose.yml build
+#   2. docker compose -f development/compose.yml up -d
+#   3. http://localhost:3000 にアクセス
+#
+# migration を当てたいとき:
+#   docker compose -f development/compose.yml exec web pnpm migrate
+#
+# ログを見る:
+#   docker compose -f development/compose.yml logs -f web
+#
+# 後片付け（DB/Redis/files のデータごと消す）:
+#   docker compose -f development/compose.yml down
+#   rm -rf development/data
+#
+# ──────────────────────────────────────────────────────────────
+# ホスト側 pnpm dev に切り替えたいとき:
+#   - web サービスを止める: docker compose -f development/compose.yml stop web
+#   - default.yml の db.host / redis.host を localhost に書き換えてから
+#     ホスト側で pnpm dev を実行
+# ──────────────────────────────────────────────────────────────
+#
+# devcontainer 用の .devcontainer/compose.yml とは独立。
+# 同時起動は想定していない（ポート衝突するため）。
+
+name: misskey-dev
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./default.yml:/misskey/.config/default.yml:ro
+      - ./data/files:/misskey/files
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: misskey
+      POSTGRES_PASSWORD: misskey
+      POSTGRES_DB: misskey
+    volumes:
+      - ./data/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U misskey -d misskey"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
