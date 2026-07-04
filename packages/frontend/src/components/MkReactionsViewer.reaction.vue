@@ -40,6 +40,7 @@ import { noteEvents } from '@/composables/use-note-capture.js';
 import { mute as muteEmoji, unmute as unmuteEmoji, checkMuted as isEmojiMuted } from '@/utility/emoji-mute.js';
 import { addToEmojiPalette } from '@/utility/emoji-palette.js';
 import { haptic } from '@/utility/haptic.js';
+import { getImportEmojiMenuItem } from '@/utility/import-remote-emoji.js'; // fork: misskey_with_like
 
 const props = defineProps<{
 	noteId: Misskey.entities.Note['id'];
@@ -216,6 +217,8 @@ async function menu(ev: PointerEvent) {
 			},
 		});
 	}
+
+	menuItems.push(...getImportEmojiMenuItem(props.reaction)); // fork: misskey_with_like
 
 	os.popupMenu(menuItems, ev.currentTarget ?? ev.target);
 }
