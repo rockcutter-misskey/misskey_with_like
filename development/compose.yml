@@ -46,7 +46,7 @@ services:
       - "3000:3000"
     volumes:
       - ./default.yml:/misskey/.config/default.yml:ro
-      - ./data/files:/misskey/files
+      # - ./data/files:/misskey/files
 
   db:
     image: postgres:18-alpine
@@ -57,8 +57,8 @@ services:
       POSTGRES_USER: misskey
       POSTGRES_PASSWORD: misskey
       POSTGRES_DB: misskey
-    volumes:
-      - ./data/postgres:/var/lib/postgresql
+    # volumes:
+      # - ./data/postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U misskey -d misskey"]
       interval: 5s
@@ -69,8 +69,8 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-    volumes:
-      - ./data/redis:/data
+    # volumes:
+      # - ./data/redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
