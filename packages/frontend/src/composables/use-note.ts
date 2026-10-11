@@ -338,7 +338,7 @@ export function useNote(
 	// misskey_with_like での独自改変: いいね機能
 	// 原則 react() には手を入れず、別関数として実装する（upstream追従時のconflictを減らすため）
 	async function reactLike(): Promise<void> {
-		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+		const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext });
 		if (!isLoggedIn) return;
 		showMovedDialog();
 		sound.playMisskeySfx('reaction');
